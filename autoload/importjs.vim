@@ -1,40 +1,74 @@
-function importjs#ImportJSImport()
-  ruby $import_js.import
+function importjs#Word()
+  call importjs#ExecCommand("word", expand("<cword>"))
 endfunction
-function importjs#ImportJSGoTo()
-  ruby $import_js.goto
+function importjs#Goto()
+  call importjs#ExecCommand("goto", expand("<cword>"))
 endfunction
-function importjs#ImportJSRemoveUnusedImports()
-  ruby $import_js.remove_unused_imports
+function importjs#Fix()
+  call importjs#ExecCommand("fix", )
 endfunction
-function importjs#ImportJSFixImports()
-  ruby $import_js.fix_imports
+
+function importjs#ExecCommand(...)
+  let command = ['importjs'] + a:000
+  call add(command, expand("%"))
+  let resultString = system(join(command, " "), join(getline(1,'$'), "\n"))
+  let result = json_decode(resultString)
+
+  if (a:1 == "goto")
+    execute "edit " . result.goto
+    return
+  endif
+
+  call importjs#ReplaceBuffer(result.fileContent)
+  call importjs#Msg(join(result.messages, "\n"))
+  if (len(result.unresolvedImports))
+    call importjs#Resolve(result.unresolvedImports)
+  endif
+endfunction
+
+function importjs#Resolve(unresolvedImports)
+  let resolved = {}
+  for [word, alternatives] in items(a:unresolvedImports)
+    let options = ["ImportJS: Select module to import for `" . word . "`:"]
+    let index = 0
+    for alternative in alternatives
+      let index = index + 1
+      call add(options, index . ": " . alternative.displayName)
+    endfor
+    let selection = inputlist(options)
+    if (selection > 0 && selection < len(options))
+      let resolved[word] = alternatives[selection - 1].importPath
+    endif
+  endfor
+  if (len(resolved))
+    let json = json_encode(resolved)
+    call importjs#ExecCommand("add", "'" . json . "'")
+  endif
+endfunction
+
+
+function importjs#ReplaceBuffer(content)
+  " Save cursor position so that we can restore it later
+  let cursorPos = getpos(".")
+  " Delete all lines from the buffer
+  execute "%d"
+  " Write the resulting content into the buffer
+  let @a = a:content
+  normal! G
+  execute "put a"
+  " Remove lingering line at the top:
+  execut ":1d"
+  " Restore cursor position
+  call setpos(".", cursorPos)
 endfunction
 
 " WideMsg() prints [long] message up to (&columns-1) length
 " guaranteed without "Press Enter" prompt.
 " http://vim.wikia.com/wiki/How_to_print_full_screen_width_messages
-function! importjs#WideMsg(msg)
+function! importjs#Msg(msg)
   let x=&ruler | let y=&showcmd
   set noruler noshowcmd
   redraw
   echo a:msg
   let &ruler=x | let &showcmd=y
 endfun
-
-ruby << EOF
-  begin
-    require 'vim_import_js'
-    $import_js = ImportJS::Importer.new
-  rescue LoadError
-    load_path_modified = false
-    ::VIM::evaluate('&runtimepath').to_s.split(',').each do |path|
-      lib = "#{path}/lib"
-      if !$LOAD_PATH.include?(lib) and File.exist?(lib)
-        $LOAD_PATH << lib
-        load_path_modified = true
-      end
-    end
-    retry if load_path_modified
-  end
-EOF

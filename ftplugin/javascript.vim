@@ -1,11 +1,11 @@
-if !hasmapto(':ImportJSImport<CR>') && maparg('<Leader>j', 'n') == ''
-  silent! nnoremap <buffer> <unique> <silent> <Leader>j :ImportJSImport<CR>
+if !hasmapto(':ImportJSWord<CR>') && maparg('<Leader>', 'n') == ''
+  silent! nnoremap <buffer> <unique> <silent> <Leader> :ImportJSWord<CR>
 endif
 
-if !hasmapto(':ImportJSFixImports<CR>') && maparg('<Leader>i', 'n') == ''
-  silent! nnoremap <buffer> <unique> <silent> <Leader>i :ImportJSFixImports<CR>
+if !hasmapto(':ImportJSFix<CR>') && maparg('<Leader>i', 'n') == ''
+  silent! nnoremap <buffer> <unique> <silent> <Leader>i :ImportJSFix<CR>
 endif
 
-if !hasmapto(':ImportJSGoTo<CR>') && maparg('<Leader>g', 'n') == ''
-  silent! nnoremap <buffer> <unique> <silent> <Leader>g :ImportJSGoTo<CR>
+if !hasmapto(':ImportJSGoto<CR>') && maparg('<Leader>g', 'n') == ''
+  silent! nnoremap <buffer> <unique> <silent> <Leader>g :ImportJSGoto<CR>
 endif
