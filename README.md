@@ -21,6 +21,6 @@ By default, import-js attempts to set up the following mappings:
 
 Mapping     | Command               | Description
 ------------|-----------------------|---------------------------------------------------------------------
-`<Leader>j` | `:ImportJSImport`     | Import the module for the variable under the cursor.
-`<Leader>i` | `:ImportJSFixImports` | Import any missing modules and remove any modules that are not used.
-`<Leader>g` | `:ImportJSGoTo`       | Go to the module of the variable under the cursor.
+`<Leader>j` | `:ImportJSWord`       | Import the module for the variable under the cursor.
+`<Leader>i` | `:ImportJSFix`        | Import any missing modules and remove any modules that are not used.
+`<Leader>g` | `:ImportJSGoto`       | Go to the module of the variable under the cursor.
