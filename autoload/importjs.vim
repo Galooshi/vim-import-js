@@ -62,7 +62,7 @@ function importjs#ReplaceBuffer(content)
   call setpos(".", cursorPos)
 endfunction
 
-" WideMsg() prints [long] message up to (&columns-1) length
+" Prints [long] message up to (&columns-1) length
 " guaranteed without "Press Enter" prompt.
 " http://vim.wikia.com/wiki/How_to_print_full_screen_width_messages
 function! importjs#Msg(msg)
