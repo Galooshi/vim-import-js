@@ -1,6 +1,6 @@
 # Vim support
 
-import-js is meant to be used as a Pathogen plugin. Just `git clone` this repo
+ImportJS is meant to be used as a Pathogen plugin. Just `git clone` this repo
 into the `bundles` folder and you are good to go!
 
 ## Dependencies
@@ -13,7 +13,7 @@ npm install -g import-js
 
 ## Default mappings
 
-By default, import-js attempts to set up the following mappings:
+By default, ImportJS attempts to set up the following mappings:
 
 Mapping     | Command               | Description
 ------------|-----------------------|---------------------------------------------------------------------
