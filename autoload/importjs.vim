@@ -10,8 +10,9 @@ endfunction
 
 function importjs#ExecCommand(...)
   let command = ['importjs'] + a:000
+  let fileContent = join(getline(1, '$'), "\n")
   call add(command, expand("%"))
-  let resultString = system(join(command, " "), join(getline(1,'$'), "\n"))
+  let resultString = system(join(command, " "), fileContent)
   let result = json_decode(resultString)
 
   if (a:1 == "goto" && has_key(result, 'goto'))
@@ -19,7 +20,10 @@ function importjs#ExecCommand(...)
     return
   endif
 
-  call importjs#ReplaceBuffer(result.fileContent)
+  if (result.fileContent != fileContent)
+    call importjs#ReplaceBuffer(result.fileContent)
+  endif
+
   call importjs#Msg(join(result.messages, "\n"))
   if (len(result.unresolvedImports))
     call importjs#Resolve(result.unresolvedImports)
