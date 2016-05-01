@@ -14,7 +14,7 @@ function importjs#ExecCommand(...)
   let resultString = system(join(command, " "), join(getline(1,'$'), "\n"))
   let result = json_decode(resultString)
 
-  if (a:1 == "goto")
+  if (a:1 == "goto" && has_key(result, 'goto'))
     execute "edit " . result.goto
     return
   endif
