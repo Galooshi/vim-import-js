@@ -24,7 +24,9 @@ function importjs#ExecCommand(...)
     call importjs#ReplaceBuffer(result.fileContent)
   endif
 
-  call importjs#Msg(join(result.messages, "\n"))
+  if (len(result.messages))
+    call importjs#Msg(join(result.messages, "\n"))
+  endif
   if (len(result.unresolvedImports))
     call importjs#Resolve(result.unresolvedImports)
   endif
