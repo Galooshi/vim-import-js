@@ -13,6 +13,10 @@ function importjs#ExecCommand(...)
   let fileContent = join(getline(1, '$'), "\n")
   call add(command, expand("%"))
   let resultString = system(join(command, " "), fileContent)
+  if (v:shell_error)
+    echoerr resultString
+    return
+  endif
   let result = json_decode(resultString)
 
   if (a:1 == "goto" && has_key(result, 'goto'))
