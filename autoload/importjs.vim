@@ -82,3 +82,7 @@ function! importjs#Msg(msg)
   echo a:msg
   let &ruler=x | let &showcmd=y
 endfun
+
+function! importjs#Init()
+  echomsg 'Galooshi!'
+endfunction
