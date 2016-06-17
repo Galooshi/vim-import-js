@@ -5,21 +5,22 @@ function importjs#Goto()
   call importjs#ExecCommand("goto", expand("<cword>"))
 endfunction
 function importjs#Fix()
-  call importjs#ExecCommand("fix", )
+  call importjs#ExecCommand("fix", "")
 endfunction
 
-function importjs#ExecCommand(...)
-  let command = ['importjs'] + a:000
+function importjs#ExecCommand(command, arg)
   let fileContent = join(getline(1, '$'), "\n")
-  call add(command, expand("%"))
-  let resultString = system(join(command, " "), fileContent)
-  if (v:shell_error)
-    echoerr resultString
-    return
-  endif
+  let payload = {
+    \'command': a:command,
+    \'commandArg': a:arg,
+    \'pathToFile': expand("%"),
+    \'fileContent': fileContent,
+  \}
+  let resultString = ch_evalraw(g:ImportJSChannel, json_encode(payload) . "\n")
+  " TODO: add error handling here
   let result = json_decode(resultString)
 
-  if (a:1 == "goto" && has_key(result, 'goto'))
+  if (a:command == "goto" && has_key(result, 'goto'))
     execute "edit " . result.goto
     return
   endif
@@ -52,7 +53,7 @@ function importjs#Resolve(unresolvedImports)
   endfor
   if (len(resolved))
     let json = json_encode(resolved)
-    call importjs#ExecCommand("add", "'" . json . "'")
+    call importjs#ExecCommand("add", json)
   endif
 endfunction
 
@@ -87,4 +88,5 @@ function! importjs#Init()
    " Include the PID of the parent (this Vim process) to make `ps` output more
    " useful.
   let s:job=job_start(['importjsd', '--vim-pid=' . getpid()])
+  let g:ImportJSChannel=job_getchannel(s:job)
 endfunction
