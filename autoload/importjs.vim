@@ -84,5 +84,7 @@ function! importjs#Msg(msg)
 endfun
 
 function! importjs#Init()
-  echomsg 'Galooshi!'
+   " Include the PID of the parent (this Vim process) to make `ps` output more
+   " useful.
+  let s:job=job_start(['importjsd', '--vim-pid=' . getpid()])
 endfunction
