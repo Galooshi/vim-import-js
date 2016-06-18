@@ -52,8 +52,7 @@ function importjs#Resolve(unresolvedImports)
     endif
   endfor
   if (len(resolved))
-    let json = json_encode(resolved)
-    call importjs#ExecCommand("add", json)
+    call importjs#ExecCommand("add", resolved)
   endif
 endfunction
 
