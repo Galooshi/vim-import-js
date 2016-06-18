@@ -17,8 +17,12 @@ function importjs#ExecCommand(command, arg)
     \'fileContent': fileContent,
   \}
   let resultString = ch_evalraw(g:ImportJSChannel, json_encode(payload) . "\n")
-  " TODO: add error handling here
   let result = json_decode(resultString)
+
+  if (has_key(result, 'error'))
+    echoerr result.error
+    return
+  endif
 
   if (a:command == "goto" && has_key(result, 'goto'))
     execute "edit " . result.goto
