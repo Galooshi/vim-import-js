@@ -90,6 +90,6 @@ endfun
 function! importjs#Init()
    " Include the PID of the parent (this Vim process) to make `ps` output more
    " useful.
-  let s:job=job_start(['importjsd', '--vim-pid=' . getpid()])
+  let s:job=job_start(['importjsd', '--parent-pid', getpid()])
   let g:ImportJSChannel=job_getchannel(s:job)
 endfunction
