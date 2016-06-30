@@ -87,9 +87,19 @@ function! importjs#Msg(msg)
   let &ruler=x | let &showcmd=y
 endfun
 
+function! importjs#JobExit(job, exitstatus)
+  if (a:exitstatus == 127)
+    echoerr "importjsd command not found. Run `npm install import-js` to get it."
+    echoerr ""
+  endif
+endfun
+
 function! importjs#Init()
    " Include the PID of the parent (this Vim process) to make `ps` output more
    " useful.
-  let s:job=job_start(['importjsd', '--parent-pid', getpid()])
+  let s:job=job_start(['importjsd', '--parent-pid', getpid()], {
+    \'exit_cb': 'importjs#JobExit',
+  \})
+
   let g:ImportJSChannel=job_getchannel(s:job)
 endfunction
