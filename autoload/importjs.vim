@@ -16,8 +16,18 @@ function importjs#ExecCommand(command, arg)
     \'pathToFile': expand("%"),
     \'fileContent': fileContent,
   \}
-  let resultString = ch_evalraw(g:ImportJSChannel, json_encode(payload) . "\n")
-  let result = json_decode(resultString)
+  try
+    let resultString = ch_evalraw(g:ImportJSChannel, json_encode(payload) . "\n")
+    let result = json_decode(resultString)
+  catch /E715:/
+    " Not a dictionary
+    echoerr "Unexpected response from import-js: " . resultString
+    return
+  catch /E906:/
+    " channel not open
+    echoerr "importjsd process not running"
+    return
+  endtry
 
   if (has_key(result, 'error'))
     echoerr result.error
