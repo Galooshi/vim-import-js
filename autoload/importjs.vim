@@ -1,8 +1,16 @@
 function importjs#Word()
-  call importjs#ExecCommand("word", expand("<cword>"))
+  let word = expand("<cword>")
+  if (empty(word))
+    return
+  endif
+  call importjs#ExecCommand("word", word)
 endfunction
 function importjs#Goto()
-  call importjs#ExecCommand("goto", expand("<cword>"))
+  let word = expand("<cword>")
+  if (empty(word))
+    return
+  endif
+  call importjs#ExecCommand("goto", word)
 endfunction
 function importjs#Fix()
   call importjs#ExecCommand("fix", "")
