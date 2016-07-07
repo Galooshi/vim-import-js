@@ -5,21 +5,36 @@ function importjs#Goto()
   call importjs#ExecCommand("goto", expand("<cword>"))
 endfunction
 function importjs#Fix()
-  call importjs#ExecCommand("fix", )
+  call importjs#ExecCommand("fix", "")
 endfunction
 
-function importjs#ExecCommand(...)
-  let command = ['importjs'] + a:000
+function importjs#ExecCommand(command, arg)
   let fileContent = join(getline(1, '$'), "\n")
-  call add(command, expand("%"))
-  let resultString = system(join(command, " "), fileContent)
-  if (v:shell_error)
-    echoerr resultString
+  let payload = {
+    \'command': a:command,
+    \'commandArg': a:arg,
+    \'pathToFile': expand("%"),
+    \'fileContent': fileContent,
+  \}
+  try
+    let resultString = ch_evalraw(g:ImportJSChannel, json_encode(payload) . "\n")
+    let result = json_decode(resultString)
+  catch /E715:/
+    " Not a dictionary
+    echoerr "Unexpected response from import-js: " . resultString
+    return
+  catch /E906:/
+    " channel not open
+    echoerr "importjsd process not running"
+    return
+  endtry
+
+  if (has_key(result, 'error'))
+    echoerr result.error
     return
   endif
-  let result = json_decode(resultString)
 
-  if (a:1 == "goto" && has_key(result, 'goto'))
+  if (a:command == "goto" && has_key(result, 'goto'))
     execute "edit " . result.goto
     return
   endif
@@ -51,8 +66,7 @@ function importjs#Resolve(unresolvedImports)
     endif
   endfor
   if (len(resolved))
-    let json = json_encode(resolved)
-    call importjs#ExecCommand("add", "'" . json . "'")
+    call importjs#ExecCommand("add", resolved)
   endif
 endfunction
 
@@ -82,3 +96,20 @@ function! importjs#Msg(msg)
   echo a:msg
   let &ruler=x | let &showcmd=y
 endfun
+
+function! importjs#JobExit(job, exitstatus)
+  if (a:exitstatus == 127)
+    echoerr "importjsd command not found. Run `npm install import-js` to get it."
+    echoerr ""
+  endif
+endfun
+
+function! importjs#Init()
+   " Include the PID of the parent (this Vim process) to make `ps` output more
+   " useful.
+  let s:job=job_start(['importjsd', '--parent-pid', getpid()], {
+    \'exit_cb': 'importjs#JobExit',
+  \})
+
+  let g:ImportJSChannel=job_getchannel(s:job)
+endfunction
