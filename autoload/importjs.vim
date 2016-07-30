@@ -29,7 +29,7 @@ function importjs#ExecCommand(command, arg)
     let result = json_decode(resultString)
   catch /E715:/
     " Not a dictionary
-    echoerr "Unexpected response from import-js: " . resultString
+    echoerr "Unexpected response from `importjs " . a:command . "`: " . resultString
     return
   catch /E906:/
     " channel not open
