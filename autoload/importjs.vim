@@ -16,6 +16,25 @@ function importjs#Fix()
   call importjs#ExecCommand("fix", "")
 endfunction
 
+" Execute the command. If we get an empty response, keep trying to execute until
+" we get a non-empty response or hit the max number of tries.
+function importjs#TryExecPayload(payload, tryCount)
+  if (a:tryCount > 3)
+    echoerr "No response from `importjs` after " . a:tryCount . " tries"
+    return
+  endif
+
+  let resultString = ch_evalraw(g:ImportJSChannel, json_encode(a:payload) . "\n")
+  if (resultString != "")
+    return resultString
+  endif
+
+  " We got no response, which probably means that importjsd hasn't had enough
+  " time to start up yet. Let's wait a little and try again.
+  sleep 100m
+  return importjs#TryExecPayload(a:payload, a:tryCount + 1)
+endfunction
+
 function importjs#ExecCommand(command, arg)
   let fileContent = join(getline(1, '$'), "\n")
   let payload = {
@@ -26,11 +45,7 @@ function importjs#ExecCommand(command, arg)
   \}
 
   try
-    let resultString = ch_evalraw(g:ImportJSChannel, json_encode(payload) . "\n")
-    if (resultString == "")
-      echoerr "No response from `importjs " . a:command . "`"
-      return
-    endif
+    let resultString = importjs#TryExecPayload(payload, 0)
   catch /E715:/
     " Not a dictionary
     echoerr "Unexpected response from `importjs " . a:command . "`: " . resultString
