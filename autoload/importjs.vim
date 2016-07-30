@@ -24,8 +24,14 @@ function importjs#ExecCommand(command, arg)
     \'pathToFile': expand("%"),
     \'fileContent': fileContent,
   \}
+
   try
     let resultString = ch_evalraw(g:ImportJSChannel, json_encode(payload) . "\n")
+    if (resultString == "")
+      echoerr "No response from `importjs " . a:command . "`"
+      return
+    endif
+
     let result = json_decode(resultString)
   catch /E715:/
     " Not a dictionary
