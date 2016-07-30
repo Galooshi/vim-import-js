@@ -51,10 +51,10 @@ function importjs#ExecCommand(command, arg)
     call importjs#ReplaceBuffer(result.fileContent)
   endif
 
-  if (len(result.messages))
+  if (has_key(result, 'messages') && len(result.messages))
     call importjs#Msg(join(result.messages, "\n"))
   endif
-  if (len(result.unresolvedImports))
+  if (has_key(result, 'unresolvedImports') && len(result.unresolvedImports))
     call importjs#Resolve(result.unresolvedImports)
   endif
 endfunction
