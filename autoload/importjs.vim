@@ -31,8 +31,6 @@ function importjs#ExecCommand(command, arg)
       echoerr "No response from `importjs " . a:command . "`"
       return
     endif
-
-    let result = json_decode(resultString)
   catch /E715:/
     " Not a dictionary
     echoerr "Unexpected response from `importjs " . a:command . "`: " . resultString
@@ -42,6 +40,8 @@ function importjs#ExecCommand(command, arg)
     echoerr "importjsd process not running"
     return
   endtry
+
+  let result = json_decode(resultString)
 
   if (has_key(result, 'error'))
     echoerr result.error
