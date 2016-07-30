@@ -46,10 +46,6 @@ function importjs#ExecCommand(command, arg)
 
   try
     let resultString = importjs#TryExecPayload(payload, 0)
-  catch /E715:/
-    " Not a dictionary
-    echoerr "Unexpected response from `importjs " . a:command . "`: " . resultString
-    return
   catch /E906:/
     " channel not open
     echoerr "importjsd process not running"
