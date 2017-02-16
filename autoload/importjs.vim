@@ -40,7 +40,7 @@ function importjs#ExecCommand(command, arg)
   let payload = {
     \'command': a:command,
     \'commandArg': a:arg,
-    \'pathToFile': expand("%"),
+    \'pathToFile': expand("%:p"),
     \'fileContent': fileContent,
   \}
 
