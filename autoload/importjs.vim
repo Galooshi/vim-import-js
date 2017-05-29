@@ -66,11 +66,11 @@ function importjs#ExecCommand(command, arg)
   endtry
 
   if (resultString != "")
-    return importjs#ParseResult(resultString, a:command)
+    return importjs#ParseResult(resultString)
   endif
 endfunction
 
-function importjs#ParseResult(resultString, command)
+function importjs#ParseResult(resultString)
   let result = json_decode(a:resultString)
 
   if (has_key(result, 'error'))
@@ -78,7 +78,7 @@ function importjs#ParseResult(resultString, command)
     return
   endif
 
-  if ((a:command == "goto" || a:command == "") && has_key(result, 'goto'))
+  if (has_key(result, 'goto'))
     execute "edit " . result.goto
     return
   endif
@@ -158,7 +158,7 @@ function! s:JobHandler(job_id, data, event) dict
   if a:event == 'stdout'
     let str = join(a:data)
     if strpart(str, 0, 1) == "{"
-      call importjs#ParseResult(str, "")
+      call importjs#ParseResult(str)
     endif
   elseif a:event == 'stderr'
     echoerr "import-js error: " . join(a:data)
