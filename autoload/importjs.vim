@@ -24,9 +24,22 @@ function importjs#TryExecPayload(payload, tryCount)
     return
   endif
 
-  let resultString = ch_evalraw(g:ImportJSChannel, json_encode(a:payload) . "\n")
-  if (resultString != "")
-    return resultString
+  if exists("*ch_evalraw")
+    let resultString = ch_evalraw(g:ImportJSChannel, json_encode(a:payload) . "\n")
+    if (resultString != "")
+      return resultString
+    endif
+  endif
+
+  if exists("*jobsend")
+    " Problem starting with importjsd process
+    if s:job == -1
+      echoerr "importjsd process not running"
+      return ""
+    endif
+
+    call jobsend(s:job, json_encode(a:payload) . "\n")
+    return ""
   endif
 
   " We got no response, which probably means that importjsd hasn't had enough
@@ -52,18 +65,25 @@ function importjs#ExecCommand(command, arg)
     return
   endtry
 
-  let result = json_decode(resultString)
+  if (resultString != "")
+    return importjs#ParseResult(resultString)
+  endif
+endfunction
+
+function importjs#ParseResult(resultString)
+  let result = json_decode(a:resultString)
 
   if (has_key(result, 'error'))
     echoerr result.error
     return
   endif
 
-  if (a:command == "goto" && has_key(result, 'goto'))
+  if (has_key(result, 'goto'))
     execute "edit " . result.goto
     return
   endif
 
+  let fileContent = join(getline(1, '$'), "\n")
   if (result.fileContent != fileContent)
     call importjs#ReplaceBuffer(result.fileContent)
   endif
@@ -133,12 +153,39 @@ function! importjs#JobExit(job, exitstatus)
   endif
 endfun
 
-function! importjs#Init()
-   " Include the PID of the parent (this Vim process) to make `ps` output more
-   " useful.
-  let s:job=job_start(['importjsd', 'start', '--parent-pid', getpid()], {
-    \'exit_cb': 'importjs#JobExit',
-  \})
+" Neovim job handler
+function! s:JobHandler(job_id, data, event) dict
+  if a:event == 'stdout'
+    let str = join(a:data)
+    if strpart(str, 0, 1) == "{"
+      call importjs#ParseResult(str)
+    endif
+  elseif a:event == 'stderr'
+    echoerr "import-js error: " . join(a:data)
+  endif
+endfunction
 
-  let g:ImportJSChannel=job_getchannel(s:job)
+function! importjs#Init()
+  let s:callbacks = {
+        \ 'on_stdout': function('s:JobHandler'),
+        \ 'on_stderr': function('s:JobHandler'),
+        \ 'on_exit': function('s:JobHandler')
+        \ }
+
+  " Include the PID of the parent (this Vim process) to make `ps` output more
+  " useful.
+
+  " neovim
+  if exists("*jobstart")
+    let s:job = jobstart(['importjsd', 'start', '--parent-pid', getpid()], s:callbacks)
+  endif
+
+  " vim
+  if exists("*job_start")
+    let s:job=job_start(['importjsd', 'start', '--parent-pid', getpid()], {
+          \'exit_cb': 'importjs#JobExit',
+          \})
+
+    let g:ImportJSChannel=job_getchannel(s:job)
+  endif
 endfunction
