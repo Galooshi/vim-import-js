@@ -50,8 +50,13 @@ function importjs#TryExecPayload(payload, tryCount)
   return importjs#TryExecPayload(a:payload, a:tryCount + 1)
 endfunction
 
-function importjs#ExecCommand(command, arg)
-  let fileContent = join(getline(1, '$'), "\n")
+function importjs#ExecCommand(command, arg, ...)
+  let sendContent = (a:0 >= 1) ? a:1 : 1
+  if sendContent == 1
+    let fileContent = join(getline(1, '$'), "\n")
+  else
+    let fileContent = ''
+  endif
   let payload = {
     \'command': a:command,
     \'commandArg': a:arg,
@@ -83,6 +88,12 @@ function importjs#ParseResult(resultString)
   if (has_key(result, 'goto'))
     execute "edit " . result.goto
     return
+  endif
+
+  if (has_key(result, 'modules'))
+    " Simply return the list of modules returned in a search. This can be used
+    " by other plugins wanting to make use of the import-js search function.
+    return result.modules
   endif
 
   let fileContent = join(getline(1, '$'), "\n")
