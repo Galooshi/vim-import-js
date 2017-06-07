@@ -34,7 +34,7 @@ function importjs#TryExecPayload(payload, tryCount)
   endif
 
   if exists("*jobsend")
-    " Problem starting with importjsd process
+    " Problem starting with importjs process
     if s:job == -1
       echoerr "importjs daemon process not running"
       return ""
@@ -44,7 +44,7 @@ function importjs#TryExecPayload(payload, tryCount)
     return ""
   endif
 
-  " We got no response, which probably means that importjsd hasn't had enough
+  " We got no response, which probably means that importjs hasn't had enough
   " time to start up yet. Let's wait a little and try again.
   sleep 100m
   return importjs#TryExecPayload(a:payload, a:tryCount + 1)
@@ -68,7 +68,7 @@ function importjs#ExecCommand(command, arg, ...)
     let resultString = importjs#TryExecPayload(payload, 0)
   catch /E906:/
     " channel not open
-    echoerr "importjsd process not running"
+    echoerr "importjs process not running"
     return
   endtry
 
@@ -161,7 +161,7 @@ endfun
 
 function! importjs#JobExit(job, exitstatus)
   if (a:exitstatus == 127)
-    echoerr "importjsd command not found. Run `npm install import-js` to get it."
+    echoerr "importjs command not found. Run `npm install import-js` to get it."
     echoerr ""
   endif
 endfun
@@ -190,12 +190,12 @@ function! importjs#Init()
 
   " neovim
   if exists("*jobstart")
-    let s:job = jobstart(['importjsd', 'start', '--parent-pid', getpid()], s:callbacks)
+    let s:job = jobstart(['importjs', 'start', '--parent-pid', getpid()], s:callbacks)
   endif
 
   " vim
   if exists("*job_start")
-    let s:job=job_start(['importjsd', 'start', '--parent-pid', getpid()], {
+    let s:job=job_start(['importjs', 'start', '--parent-pid', getpid()], {
           \'exit_cb': 'importjs#JobExit',
           \})
 
