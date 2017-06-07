@@ -5,6 +5,7 @@ function importjs#Word()
   endif
   call importjs#ExecCommand("word", word)
 endfunction
+
 function importjs#Goto()
   let word = expand("<cword>")
   if (empty(word))
@@ -12,6 +13,7 @@ function importjs#Goto()
   endif
   call importjs#ExecCommand("goto", word)
 endfunction
+
 function importjs#Fix()
   call importjs#ExecCommand("fix", "")
 endfunction
@@ -34,7 +36,7 @@ function importjs#TryExecPayload(payload, tryCount)
   if exists("*jobsend")
     " Problem starting with importjsd process
     if s:job == -1
-      echoerr "importjsd process not running"
+      echoerr "importjs daemon process not running"
       return ""
     endif
 
