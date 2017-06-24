@@ -118,7 +118,15 @@ function importjs#Resolve(unresolvedImports)
       let index = index + 1
       call add(options, index . ": " . alternative.displayName)
     endfor
+    call inputsave()
+
+    " Clear out previous message. This is particularly important if there are
+    " multiple unresolved imports that we will be prompting for.
+    call importjs#Msg("")
+
     let selection = inputlist(options)
+
+    call inputrestore()
     if (selection > 0 && selection < len(options))
       let resolved[word] = alternatives[selection - 1].importPath
     endif
