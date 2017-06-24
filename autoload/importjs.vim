@@ -118,7 +118,9 @@ function importjs#Resolve(unresolvedImports)
       let index = index + 1
       call add(options, index . ": " . alternative.displayName)
     endfor
+    call inputsave()
     let selection = inputlist(options)
+    call inputrestore()
     if (selection > 0 && selection < len(options))
       let resolved[word] = alternatives[selection - 1].importPath
     endif
