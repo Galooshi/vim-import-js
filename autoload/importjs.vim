@@ -111,9 +111,15 @@ endfunction
 
 function importjs#Resolve(unresolvedImports)
   let resolved = {}
+
+  " Save cursor position so that we can restore it later
+  let cursorPos = getpos(".")
+
   for [word, alternatives] in items(a:unresolvedImports)
     " Highlight the word in the buffer
     let match = matchadd("Search", "\\<" . word . "\\>", -1)
+    " Jump to the word
+    execute ":ijump \\<" . word . "\\>"
 
     let options = ["ImportJS: Select module to import for `" . word . "`:"]
     let index = 0
@@ -138,6 +144,9 @@ function importjs#Resolve(unresolvedImports)
       let resolved[word] = alternatives[selection - 1].importPath
     endif
   endfor
+
+  call setpos(".", cursorPos)
+
   if (len(resolved))
     call importjs#ExecCommand("add", resolved)
   endif
