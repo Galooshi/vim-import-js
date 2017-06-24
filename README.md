@@ -17,14 +17,6 @@ You need import-js installed globally to use this plugin.
 npm install -g import-js
 ```
 
-## Speeding it up with Watchman
-
-If you want an extra performance boost, you can [install
-Watchman](https://facebook.github.io/watchman/docs/install.html). See the
-[ImportJS
-README](https://github.com/Galooshi/import-js#speeding-it-up)
-for more information.
-
 ## Default mappings
 
 By default, ImportJS attempts to set up the following mappings:
