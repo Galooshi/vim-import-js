@@ -1,23 +1,24 @@
-# Vim support
+ImportJS helps you import JavaScript dependencies. Hit a keyboard shortcut
+to automatically add `import x from 'y'` statements at the top of the file.
+
+![Demo of ImportJS in action](https://raw.github.com/galooshi/import-js/master/demo.gif)
+
+
+# Installation
 
 ImportJS is meant to be used as a Pathogen plugin. Just `git clone` this repo
 into the `bundles` folder and you are good to go!
 
 ## Dependencies
 
-You need to have the import-js npm package installed to use this plugin.
+ImportJS works in [Vim](http://www.vim.org/) (version 8 and later) and
+[Neovim](https://neovim.io/).
+
+You need import-js installed globally to use this plugin.
 
 ```sh
 npm install -g import-js
 ```
-
-## Speeding it up with Watchman
-
-If you want an extra performance boost, you can [install
-Watchman](https://facebook.github.io/watchman/docs/install.html). See the
-[ImportJS
-README](https://github.com/Galooshi/import-js#speeding-it-up)
-for more information.
 
 ## Default mappings
 
@@ -38,4 +39,4 @@ After starting up vim, and before you've imported anything, run this command:
 :call ch_logfile('channel_log.txt', 'w')
 ```
 
-After this, you will get useful information in `channel_log.txt`.
+After this, you should get useful information in `channel_log.txt`.
