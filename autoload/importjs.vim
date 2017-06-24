@@ -116,10 +116,11 @@ function importjs#Resolve(unresolvedImports)
   let cursorPos = getpos(".")
 
   for [word, alternatives] in items(a:unresolvedImports)
+    let wordWithBoundaries = "\\<" . word . "\\>"
     " Highlight the word in the buffer
-    let match = matchadd("Search", "\\<" . word . "\\>", -1)
+    let match = matchadd("Search", wordWithBoundaries, -1)
     " Jump to the word
-    execute ":ijump \\<" . word . "\\>"
+    execute ":ijump " . wordWithBoundaries
 
     let options = ["ImportJS: Select module to import for `" . word . "`:"]
     let index = 0
