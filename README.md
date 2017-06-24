@@ -1,6 +1,9 @@
 ImportJS helps you import JavaScript dependencies. Hit a keyboard shortcut
 to automatically add `import x from 'y'` statements at the top of the file.
 
+![Demo of ImportJS in action](https://raw.github.com/galooshi/import-js/master/demo.gif)
+
+
 # Installation
 
 ImportJS is meant to be used as a Pathogen plugin. Just `git clone` this repo
