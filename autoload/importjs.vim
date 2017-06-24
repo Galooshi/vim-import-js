@@ -112,6 +112,9 @@ endfunction
 function importjs#Resolve(unresolvedImports)
   let resolved = {}
   for [word, alternatives] in items(a:unresolvedImports)
+    " Highlight the word in the buffer
+    let match = matchadd("Search", "\\<" . word . "\\>", -1)
+
     let options = ["ImportJS: Select module to import for `" . word . "`:"]
     let index = 0
     for alternative in alternatives
@@ -127,6 +130,10 @@ function importjs#Resolve(unresolvedImports)
     let selection = inputlist(options)
 
     call inputrestore()
+
+    " Remove the highlight
+    call matchdelete(match)
+
     if (selection > 0 && selection < len(options))
       let resolved[word] = alternatives[selection - 1].importPath
     endif
