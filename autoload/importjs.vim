@@ -118,7 +118,7 @@ function importjs#Resolve(unresolvedImports)
   for [word, alternatives] in items(a:unresolvedImports)
     let wordWithBoundaries = "\\<" . word . "\\>"
     " Highlight the word in the buffer
-    let match = matchadd("Search", wordWithBoundaries, -1)
+    let match = matchadd("Search", wordWithBoundaries)
     " Jump to the word
     execute ":ijump " . wordWithBoundaries
 
