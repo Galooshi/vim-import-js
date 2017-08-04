@@ -142,7 +142,7 @@ function importjs#Resolve(unresolvedImports)
     call matchdelete(match)
 
     if (selection > 0 && selection < len(options))
-      let resolved[word] = alternatives[selection - 1].importPath
+      let resolved[word] = alternatives[selection - 1].data
     endif
   endfor
 
