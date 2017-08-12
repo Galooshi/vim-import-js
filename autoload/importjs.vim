@@ -215,11 +215,7 @@ endfunction
 
 function! importjs#HandleJoinedNeovimInput(line)
   if strpart(a:line, 0, 1) == "{"
-    try
-      call importjs#ParseResult(a:line)
-    catch /E474:/
-      echo 'Invalid JSON, input length: ' . strlen(a:line)
-    endtry
+    call importjs#ParseResult(a:line)
   endif
 endfunction
 
