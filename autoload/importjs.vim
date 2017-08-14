@@ -191,13 +191,41 @@ function! importjs#JobExit(job, exitstatus)
   endif
 endfun
 
+" Holds job output that must be joined across multiple outputs for Neovim.
+let s:neovim_job_output = ''
+
+" Neovim sends output in 8192 byte chunks, we must join all of the chunks
+" before handling them. Inspired by https://git.io/v7HcP
+function! importjs#JoinNeovimOutput(last_line, data) abort
+  let l:lines = a:data[:-2]
+
+  if len(a:data) > 1
+    let l:lines[0] = a:last_line . l:lines[0]
+    let l:new_last_line = a:data[-1]
+  else
+    let l:new_last_line = a:last_line . a:data[0]
+  endif
+
+  for l:line in l:lines
+    call importjs#HandleJoinedNeovimInput(l:line)
+  endfor
+
+  return l:new_last_line
+endfunction
+
+function! importjs#HandleJoinedNeovimInput(line)
+  if strpart(a:line, 0, 1) == "{"
+    call importjs#ParseResult(a:line)
+  endif
+endfunction
+
 " Neovim job handler
 function! s:JobHandler(job_id, data, event) dict
   if a:event == 'stdout'
-    let str = join(a:data)
-    if strpart(str, 0, 1) == "{"
-      call importjs#ParseResult(str)
-    endif
+    let s:neovim_job_output = importjs#JoinNeovimOutput(
+          \   s:neovim_job_output,
+          \   a:data
+          \)
   elseif a:event == 'stderr'
     echoerr "import-js error: " . join(a:data)
   endif
