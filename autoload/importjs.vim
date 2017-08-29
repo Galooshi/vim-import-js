@@ -248,7 +248,13 @@ function! importjs#Init()
 
   " vim
   if exists("*job_start")
-    let s:job=job_start(['importjs', 'start', '--parent-pid', getpid()], {
+    if has('win32') || has('win64')
+      let s:job_executable='importjs.cmd'
+    else
+      let s:job_executable='importjs'
+    endif
+
+    let s:job=job_start([s:job_executable, 'start', '--parent-pid', getpid()], {
           \'exit_cb': 'importjs#JobExit',
           \})
 
