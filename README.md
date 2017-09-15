@@ -8,6 +8,9 @@ to automatically add `import x from 'y'` statements at the top of the file.
 
 ImportJS is meant to be used as a Pathogen plugin. Just `git clone` this repo
 into the `bundles` folder and you are good to go!
+```
+git clone git@github.com:Galooshi/vim-import-js.git ~/.vim/bundle/vim-import-js
+```
 
 ## Dependencies
 
