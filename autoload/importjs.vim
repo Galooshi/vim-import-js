@@ -241,19 +241,19 @@ function! importjs#Init()
   " Include the PID of the parent (this Vim process) to make `ps` output more
   " useful.
 
+  if has('win32') || has('win64')
+    let s:job_executable='importjs.cmd'
+  else
+    let s:job_executable='importjs'
+  endif
+
   " neovim
   if exists("*jobstart")
-    let s:job = jobstart(['importjs', 'start', '--parent-pid', getpid()], s:callbacks)
+    let s:job = jobstart([s:job_executable, 'start', '--parent-pid', getpid()], s:callbacks)
   endif
 
   " vim
   if exists("*job_start")
-    if has('win32') || has('win64')
-      let s:job_executable='importjs.cmd'
-    else
-      let s:job_executable='importjs'
-    endif
-
     let s:job=job_start([s:job_executable, 'start', '--parent-pid', getpid()], {
           \'exit_cb': 'importjs#JobExit',
           \})
