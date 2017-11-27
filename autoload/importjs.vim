@@ -119,8 +119,12 @@ function importjs#Resolve(unresolvedImports)
     let wordWithBoundaries = "\\<" . word . "\\>"
     " Highlight the word in the buffer
     let match = matchadd("Search", wordWithBoundaries)
-    " Jump to the word
-    execute ":ijump " . wordWithBoundaries
+    try
+      " Jump to the word
+      execute ":ijump " . wordWithBoundaries
+    catch /E387:/
+      " we're already on that line
+    endtry
 
     let options = ["ImportJS: Select module to import for `" . word . "`:"]
     let index = 0
