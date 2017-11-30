@@ -1,5 +1,5 @@
-if !hasmapto(':ImportJSWord<CR>') && maparg('<Leader>', 'n') == ''
-  silent! nnoremap <buffer> <unique> <silent> <Leader> :ImportJSWord<CR>
+if !hasmapto(':ImportJSWord<CR>') && maparg('<Leader>j', 'n') == ''
+  silent! nnoremap <buffer> <unique> <silent> <Leader>j :ImportJSWord<CR>
 endif
 
 if !hasmapto(':ImportJSFix<CR>') && maparg('<Leader>i', 'n') == ''
