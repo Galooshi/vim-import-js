@@ -51,6 +51,9 @@ function importjs#TryExecPayload(payload, tryCount)
 endfunction
 
 function importjs#ExecCommand(command, arg, ...)
+  " lazy-load the background process
+  call importjs#Init()
+
   let sendContent = (a:0 >= 1) ? a:1 : 1
   if sendContent == 1
     let fileContent = join(getline(1, '$'), "\n")
@@ -236,6 +239,10 @@ function! s:JobHandler(job_id, data, event) dict
 endfunction
 
 function! importjs#Init()
+  if exists("s:job")
+    return
+  endif
+
   let s:callbacks = {
         \ 'on_stdout': function('s:JobHandler'),
         \ 'on_stderr': function('s:JobHandler'),
@@ -251,17 +258,18 @@ function! importjs#Init()
     let s:job_executable='importjs'
   endif
 
-  " neovim
   if exists("*jobstart")
+    " neovim
     let s:job = jobstart([s:job_executable, 'start', '--parent-pid', getpid()], s:callbacks)
-  endif
-
-  " vim
-  if exists("*job_start")
+  elseif exists("*job_start")
+    " vim
     let s:job=job_start([s:job_executable, 'start', '--parent-pid', getpid()], {
           \'exit_cb': 'importjs#JobExit',
           \})
 
     let g:ImportJSChannel=job_getchannel(s:job)
+    " ignore first line of output, which is something like
+    " > ImportJS (v2.10.1) DAEMON active.
+    call ch_readraw(g:ImportJSChannel, { "timeout": 2000 })
   endif
 endfunction
